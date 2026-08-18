@@ -1,0 +1,34 @@
+1. Authentication first:
+- Valid user + correct password → logs in successfully
+- Invalid username → rejected
+- Valid username + wrong password → rejected
+- Empty/missing credentials → rejected, not a crash
+- Basic injection attempt in username/password fields → safely rejected, no error leak
+
+2. Access control per role (the core of your project)
+Test each role against each action — this is your access matrix from the README, turned into test cases:
+Architect → can view ✅, can edit ✅
+Engineer → can view ✅, can edit ✅
+Contractor → can view ✅, cannot edit ❌ (should be denied, not just hidden in UI)
+Client → can view ✅, cannot edit ❌
+Unauthorised/no account → cannot view or edit ❌
+
+Test both directions — that permitted actions succeed and that forbidden actions are actually blocked (not just "hidden" from the UI but still reachable via a direct request).
+
+3. Logging (proves your security actually works)
+Every login attempt (success + failure) creates a log entry
+Every file access attempt (allowed + denied) creates a log entry
+Log entries contain: who, what action, which file, when
+Denied actions are logged as denied, not silently dropped
+
+4. Session security
+Logging out actually ends the session (old session token no longer works)
+Sessions expire after inactivity
+A reused/expired token is rejected
+
+5. Encryption (usually last, since it's less about behavior and more about implementation)
+Files are stored encrypted (not plaintext) — check this at the storage level, not just via the app
+Data sent over the connection uses HTTPS/TLS, not plain HTTP
+
+Why this order: authentication is the gate everything else sits behind, so it has to work before access-control tests even make sense. Access control is your project's actual value proposition, so it deserves the most test cases. Logging and sessions come next because they're what let you prove the security worked. Encryption last because it's usually a one-time setup check rather than many test cases.
+
