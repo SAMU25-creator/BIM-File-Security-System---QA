@@ -86,3 +86,30 @@ A feature is done when the requirement is documented, tests are automated and pa
 Penetration testing, load testing, production environments, physical site security, and implementing or fixing the BIM File Security System itself.
 
 Details: `docs/qa-strategy.md`
+
+
+
+bim-file-security-qa/
+│
+├── requirements/
+│   ├── authentication.md
+│   ├── access-control.md
+│   ├── logging.md
+│   └── encryption.md
+│
+├── tests/
+│   ├── test_authentication.py
+│   ├── test_access_control.py
+│   ├── test_logging.py
+│   ├── test_encryption.py
+│   └── test_session.py
+│
+├── test_data/
+├── reports/
+├── evidence/
+│
+├── .env
+├── .env.example
+├── requirements.txt
+├── pytest.ini
+└── README.md

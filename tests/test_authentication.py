@@ -1,5 +1,3 @@
-import pytest
-
 from authentication import login
 
 
