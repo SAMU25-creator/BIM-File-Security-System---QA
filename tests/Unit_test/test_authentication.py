@@ -1,3 +1,5 @@
+import pytest
+ 
 from authentication import login
 
 
@@ -44,3 +46,5 @@ def test_sql_injection_in_password_rejected():
     result = login("valid_user", "' OR '1'='1")
 
     assert result is False
+
+ 
