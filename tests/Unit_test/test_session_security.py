@@ -84,6 +84,7 @@ def test_many_sessions_all_get_unique_tokens():
 
 
 def test_logout_ends_session():
+    """Logging out should make the session token invalid."""
     token = create_session("engineer")
     logout(token)
 
@@ -91,6 +92,7 @@ def test_logout_ends_session():
 
 
 def test_logout_does_not_end_another_session():
+    """Logging out one session should not affect another active session."""
     token_a = create_session("architect")
     token_b = create_session("client")
     logout(token_a)
@@ -100,6 +102,7 @@ def test_logout_does_not_end_another_session():
 
 
 def test_logged_out_token_stays_rejected():
+    """A token should remain invalid after the session has been logged out."""
     token = create_session("architect")
     logout(token)
 
@@ -108,6 +111,7 @@ def test_logged_out_token_stays_rejected():
 
 
 def test_logout_twice_does_not_crash():
+    """Logging out the same token twice should not raise an exception."""
     token = create_session("architect")
     logout(token)
     logout(token)
