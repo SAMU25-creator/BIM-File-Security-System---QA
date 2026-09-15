@@ -124,6 +124,7 @@ def test_logout_twice_does_not_crash():
 # ---------------------------------------------------------------------------
 
 def test_session_expires_after_timeout(fake_clock):
+    """A session should become invalid after exceeding the inactivity timeout."""
     token = create_session("contractor")
     fake_clock(TIMEOUT + 1)
 
@@ -131,6 +132,7 @@ def test_session_expires_after_timeout(fake_clock):
 
 
 def test_session_valid_just_before_timeout(fake_clock):
+    """A session should remain valid when checked shortly before expiry."""
     token = create_session("contractor")
     fake_clock(TIMEOUT - 5)
 
@@ -138,6 +140,7 @@ def test_session_valid_just_before_timeout(fake_clock):
 
 
 def test_expired_token_stays_rejected(fake_clock):
+    """An expired token should remain invalid when validated repeatedly."""
     token = create_session("client")
     fake_clock(TIMEOUT + 1)
 
@@ -146,6 +149,7 @@ def test_expired_token_stays_rejected(fake_clock):
 
 
 def test_new_session_after_expiry_is_valid(fake_clock):
+    """A new session should be valid even after an older session has expired."""
     old_token = create_session("client")
     fake_clock(TIMEOUT + 1)
     new_token = create_session("client")
