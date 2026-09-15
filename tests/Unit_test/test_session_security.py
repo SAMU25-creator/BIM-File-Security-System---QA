@@ -40,3 +40,31 @@ def fake_clock(monkeypatch):
     return advance
 
 
+# --- Creating sessions ---
+
+def test_create_session_returns_non_empty_string():
+    token = create_session("architect")
+
+    assert isinstance(token, str)
+    assert token != ""
+
+
+def test_new_session_is_valid():
+    token = create_session("architect")
+
+    assert validate_session(token) is True
+
+
+def test_two_sessions_get_different_tokens():
+    token_a = create_session("architect")
+    token_b = create_session("architect")
+
+    assert token_a != token_b
+
+
+def test_many_sessions_all_get_unique_tokens():
+    tokens = {create_session("engineer") for _ in range(50)}
+
+    assert len(tokens) == 50
+
+
