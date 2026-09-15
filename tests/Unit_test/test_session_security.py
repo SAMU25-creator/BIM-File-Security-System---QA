@@ -101,3 +101,35 @@ def test_logout_twice_does_not_crash():
 
     assert validate_session(token) is False
 
+
+# --- Inactivity expiry ---
+
+def test_session_expires_after_timeout(fake_clock):
+    token = create_session("contractor")
+    fake_clock(TIMEOUT + 1)
+
+    assert validate_session(token) is False
+
+
+def test_session_valid_just_before_timeout(fake_clock):
+    token = create_session("contractor")
+    fake_clock(TIMEOUT - 5)
+
+    assert validate_session(token) is True
+
+
+def test_expired_token_stays_rejected(fake_clock):
+    token = create_session("client")
+    fake_clock(TIMEOUT + 1)
+
+    assert validate_session(token) is False
+    assert validate_session(token) is False
+
+
+def test_new_session_after_expiry_is_valid(fake_clock):
+    old_token = create_session("client")
+    fake_clock(TIMEOUT + 1)
+    new_token = create_session("client")
+
+    assert validate_session(old_token) is False
+    assert validate_session(new_token) is True
