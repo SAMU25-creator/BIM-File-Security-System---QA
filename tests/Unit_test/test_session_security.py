@@ -133,3 +133,29 @@ def test_new_session_after_expiry_is_valid(fake_clock):
 
     assert validate_session(old_token) is False
     assert validate_session(new_token) is True
+
+
+# --- Invalid / malformed tokens ---
+
+@pytest.mark.parametrize(
+    "bad_token",
+    [
+        None,
+        "",
+        "   ",
+        "not-a-real-token",
+        "' OR '1'='1",
+        12345,
+        [],
+        {},
+    ],
+)
+def test_invalid_token_rejected_without_crash(bad_token):
+    result = validate_session(bad_token)
+
+    assert result is False
+
+
+@pytest.mark.parametrize("bad_token", [None, "", "not-a-real-token"])
+def test_logout_with_invalid_token_does_not_crash(bad_token):
+    logout(bad_token)  # must not raise
