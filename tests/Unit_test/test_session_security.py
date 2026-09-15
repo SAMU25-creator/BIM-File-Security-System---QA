@@ -16,14 +16,16 @@ import time
 import pytest
 
 session = pytest.importorskip(
-    "session", reason="session.py not yet implemented in the Development repo"
+    "session", 
+    reason="session.py not yet implemented in the Development repo"
 )
 
 create_session = session.create_session
 validate_session = session.validate_session
 logout = session.logout
 
-# Inactivity timeout (seconds). Uses Dev's constant if one exists.
+# Use the application's configured timeout when available.
+# Otherwise, default to 30 minutes.
 TIMEOUT = getattr(session, "SESSION_TIMEOUT", 30 * 60)
 
 
@@ -32,6 +34,8 @@ def fake_clock(monkeypatch):
     """Advance time without sleeping."""
     real_time = time.time
     offset = {"seconds": 0}
+
+    # Replace time.time() with a controllable clock
     monkeypatch.setattr(time, "time", lambda: real_time() + offset["seconds"])
 
     def advance(seconds):
@@ -40,7 +44,9 @@ def fake_clock(monkeypatch):
     return advance
 
 
-# --- Creating sessions ---
+# ---------------------------------------------------------------------------
+# Session creation
+# ---------------------------------------------------------------------------
 
 def test_create_session_returns_non_empty_string():
     token = create_session("architect")
@@ -68,7 +74,10 @@ def test_many_sessions_all_get_unique_tokens():
     assert len(tokens) == 50
 
 
-# --- Logout ---
+# ---------------------------------------------------------------------------
+# Logout
+# ---------------------------------------------------------------------------
+
 
 def test_logout_ends_session():
     token = create_session("engineer")
@@ -102,7 +111,9 @@ def test_logout_twice_does_not_crash():
     assert validate_session(token) is False
 
 
-# --- Inactivity expiry ---
+# ---------------------------------------------------------------------------
+# Inactivity expiry
+# ---------------------------------------------------------------------------
 
 def test_session_expires_after_timeout(fake_clock):
     token = create_session("contractor")
@@ -135,7 +146,9 @@ def test_new_session_after_expiry_is_valid(fake_clock):
     assert validate_session(new_token) is True
 
 
-# --- Invalid / malformed tokens ---
+# ---------------------------------------------------------------------------
+# Invalid and malformed tokens
+# ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize(
     "bad_token",
