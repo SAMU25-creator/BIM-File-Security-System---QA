@@ -176,6 +176,7 @@ def test_new_session_after_expiry_is_valid(fake_clock):
     ],
 )
 def test_invalid_token_rejected_without_crash(bad_token):
+    """Invalid or malformed tokens should be rejected safely."""
     result = validate_session(bad_token)
 
     assert result is False
@@ -183,4 +184,5 @@ def test_invalid_token_rejected_without_crash(bad_token):
 
 @pytest.mark.parametrize("bad_token", [None, "", "not-a-real-token"])
 def test_logout_with_invalid_token_does_not_crash(bad_token):
+    """Logging out with an invalid token should not raise an exception."""
     logout(bad_token)  # must not raise
