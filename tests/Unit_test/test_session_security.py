@@ -49,6 +49,7 @@ def fake_clock(monkeypatch):
 # ---------------------------------------------------------------------------
 
 def test_create_session_returns_non_empty_string():
+    """A newly created session should return a non-empty string token."""
     token = create_session("architect")
 
     assert isinstance(token, str)
@@ -56,12 +57,14 @@ def test_create_session_returns_non_empty_string():
 
 
 def test_new_session_is_valid():
+    """A newly created session should immediately be considered active."""
     token = create_session("architect")
 
     assert validate_session(token) is True
 
 
 def test_two_sessions_get_different_tokens():
+    """Creating two sessions should produce different tokens."""
     token_a = create_session("architect")
     token_b = create_session("architect")
 
@@ -69,6 +72,7 @@ def test_two_sessions_get_different_tokens():
 
 
 def test_many_sessions_all_get_unique_tokens():
+    """Multiple sessions should each receive a unique token."""
     tokens = {create_session("engineer") for _ in range(50)}
 
     assert len(tokens) == 50
