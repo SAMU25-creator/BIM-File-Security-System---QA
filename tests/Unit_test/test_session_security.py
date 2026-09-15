@@ -68,3 +68,36 @@ def test_many_sessions_all_get_unique_tokens():
     assert len(tokens) == 50
 
 
+# --- Logout ---
+
+def test_logout_ends_session():
+    token = create_session("engineer")
+    logout(token)
+
+    assert validate_session(token) is False
+
+
+def test_logout_does_not_end_another_session():
+    token_a = create_session("architect")
+    token_b = create_session("client")
+    logout(token_a)
+
+    assert validate_session(token_a) is False
+    assert validate_session(token_b) is True
+
+
+def test_logged_out_token_stays_rejected():
+    token = create_session("architect")
+    logout(token)
+
+    assert validate_session(token) is False
+    assert validate_session(token) is False
+
+
+def test_logout_twice_does_not_crash():
+    token = create_session("architect")
+    logout(token)
+    logout(token)
+
+    assert validate_session(token) is False
+
