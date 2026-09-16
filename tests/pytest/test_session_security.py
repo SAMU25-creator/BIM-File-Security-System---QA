@@ -36,3 +36,16 @@ def _timeout():
     return getattr(session, SESSION_TIMEOUT_ATTR, FALLBACK_TIMEOUT)
 
 
+@pytest.fixture
+def fake_clock(monkeypatch):
+    """Lets a test advance time without sleeping."""
+    real_time = time.time
+    offset = {"seconds": 0}
+    monkeypatch.setattr(time, "time", lambda: real_time() + offset["seconds"])
+
+    def advance(seconds):
+        offset["seconds"] += seconds
+
+    return advance
+
+
