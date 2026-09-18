@@ -29,3 +29,26 @@ are provided.
 The tests do not modify BIM files or project data. They only verify
 the permission decisions returned by the check_access() function.
 """
+import pytest
+ 
+from access_control import check_access
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.requirement("AC-001")
+def test_architect_can_view():
+    """AC-001: Architect can view."""
+    result = check_access("architect", "view")
+ 
+    assert result is True
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.requirement("AC-001")
+def test_architect_can_edit():
+    """AC-001: Architect can edit."""
+    result = check_access("architect", "edit")
+ 
+    assert result is True
+ 
+ 
