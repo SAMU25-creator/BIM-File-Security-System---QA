@@ -109,7 +109,8 @@ def test_client_cannot_edit():
  
     assert result is False
  
- 
+
+# Access must be denied to an unregistered user. 
 @pytest.mark.access_control
 @pytest.mark.negative
 @pytest.mark.requirement("AC-005")
@@ -129,7 +130,8 @@ def test_unauthorised_user_cannot_edit():
  
     assert result is False
  
- 
+
+#A missing action must result in access being denied. 
 @pytest.mark.access_control
 @pytest.mark.negative
 @pytest.mark.requirement("AC-005")
@@ -138,8 +140,7 @@ def test_missing_username_rejected():
     result = check_access(None, "view")
  
     assert result is False
- 
- 
+  
 @pytest.mark.access_control
 @pytest.mark.negative
 @pytest.mark.requirement("AC-005")
@@ -149,7 +150,8 @@ def test_missing_action_rejected():
  
     assert result is False
  
- 
+
+# Any unrecognised action must be denied by the access-control system. 
 @pytest.mark.access_control
 @pytest.mark.negative
 def test_unrecognised_action_rejected():
