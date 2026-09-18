@@ -33,7 +33,9 @@ import pytest
  
 from access_control import check_access
  
- 
+
+
+#Access must be granted for the architect to view and be able to edit BIM files.
 @pytest.mark.access_control
 @pytest.mark.requirement("AC-001")
 def test_architect_can_view():
@@ -42,7 +44,6 @@ def test_architect_can_view():
  
     assert result is True
  
- 
 @pytest.mark.access_control
 @pytest.mark.requirement("AC-001")
 def test_architect_can_edit():
@@ -50,5 +51,6 @@ def test_architect_can_edit():
     result = check_access("architect", "edit")
  
     assert result is True
+
  
  
