@@ -110,3 +110,51 @@ def test_client_cannot_edit():
     assert result is False
  
  
+@pytest.mark.access_control
+@pytest.mark.negative
+@pytest.mark.requirement("AC-005")
+def test_unauthorised_user_cannot_view():
+    """AC-005: An unregistered/unknown user is denied view."""
+    result = check_access("unregistered_user", "view")
+ 
+    assert result is False
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.negative
+@pytest.mark.requirement("AC-005")
+def test_unauthorised_user_cannot_edit():
+    """AC-005: An unregistered/unknown user is denied edit."""
+    result = check_access("unregistered_user", "edit")
+ 
+    assert result is False
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.negative
+@pytest.mark.requirement("AC-005")
+def test_missing_username_rejected():
+    """AC-005: A missing (None) username must be rejected without crashing."""
+    result = check_access(None, "view")
+ 
+    assert result is False
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.negative
+@pytest.mark.requirement("AC-005")
+def test_missing_action_rejected():
+    """AC-005: A missing (None) action must be rejected without crashing."""
+    result = check_access("architect", None)
+ 
+    assert result is False
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.negative
+def test_unrecognised_action_rejected():
+    """An action outside view/edit (e.g. 'delete') must be denied."""
+    result = check_access("architect", "delete")
+ 
+    assert result is False
+ 
