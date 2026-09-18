@@ -53,6 +53,7 @@ def test_architect_can_edit():
     assert result is True
  
  
+#Access must be granted for the engineer to be able to view and edit action. 
 @pytest.mark.access_control
 @pytest.mark.requirement("AC-002")
 def test_engineer_can_view():
@@ -69,5 +70,24 @@ def test_engineer_can_edit():
     result = check_access("engineer", "edit")
  
     assert result is True
+ 
+
+#Access must be granted for the contractor to view BIM files but not edit them.
+@pytest.mark.access_control
+@pytest.mark.requirement("AC-003")
+def test_contractor_can_view():
+    """AC-003: Contractor can view."""
+    result = check_access("contractor", "view")
+ 
+    assert result is True
+ 
+@pytest.mark.access_control
+@pytest.mark.negative
+@pytest.mark.requirement("AC-003")
+def test_contractor_cannot_edit():
+    """AC-003: Contractor is denied edit, not just hidden from it."""
+    result = check_access("contractor", "edit")
+ 
+    assert result is False
  
  
