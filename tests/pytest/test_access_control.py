@@ -90,4 +90,23 @@ def test_contractor_cannot_edit():
  
     assert result is False
  
+
+@pytest.mark.access_control
+@pytest.mark.requirement("AC-004")
+def test_client_can_view():
+    """AC-004: Client can view."""
+    result = check_access("client", "view")
+ 
+    assert result is True
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.negative
+@pytest.mark.requirement("AC-004")
+def test_client_cannot_edit():
+    """AC-004: Client is denied edit, not just hidden from it."""
+    result = check_access("client", "edit")
+ 
+    assert result is False
+ 
  
