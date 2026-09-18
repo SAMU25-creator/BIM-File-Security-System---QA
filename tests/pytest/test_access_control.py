@@ -51,6 +51,23 @@ def test_architect_can_edit():
     result = check_access("architect", "edit")
  
     assert result is True
-
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.requirement("AC-002")
+def test_engineer_can_view():
+    """AC-002: Engineer can view."""
+    result = check_access("engineer", "view")
+ 
+    assert result is True
+ 
+ 
+@pytest.mark.access_control
+@pytest.mark.requirement("AC-002")
+def test_engineer_can_edit():
+    """AC-002: Engineer can edit."""
+    result = check_access("engineer", "edit")
+ 
+    assert result is True
  
  
