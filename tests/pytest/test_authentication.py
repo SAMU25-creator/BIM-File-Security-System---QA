@@ -100,3 +100,22 @@ def test_missing_password_rejected():
     assert result is False
 
 
+# Injection-style input in either field must be safely rejected, not interpreted.
+@pytest.mark.auth
+@pytest.mark.negative
+@pytest.mark.requirement("AUTH-005")
+def test_sql_injection_in_username_rejected():
+    """AUTH-005: Basic injection-style input in the username field must be safely rejected."""
+    result = login("' OR '1'='1", "correct_password")
+
+    assert result is False
+
+
+@pytest.mark.auth
+@pytest.mark.negative
+@pytest.mark.requirement("AUTH-005")
+def test_sql_injection_in_password_rejected():
+    """AUTH-005: Basic injection-style input in the password field must be safely rejected."""
+    result = login("valid_user", "' OR '1'='1")
+
+    assert result is False
