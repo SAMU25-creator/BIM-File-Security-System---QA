@@ -58,3 +58,25 @@ def test_invalid_username_rejected():
     assert result is False
 
 
+# A registered username with the wrong password must be rejected.
+@pytest.mark.auth
+@pytest.mark.negative
+@pytest.mark.requirement("AUTH-003")
+def test_wrong_password_rejected():
+    """AUTH-003: A registered username with an incorrect password must be rejected."""
+    result = login("valid_user", "wrong_password")
+
+    assert result is False
+
+
+# Empty or missing credentials must be rejected without crashing the system.
+@pytest.mark.auth
+@pytest.mark.negative
+@pytest.mark.requirement("AUTH-004")
+def test_empty_credentials_rejected():
+    """AUTH-004: Empty credentials must be rejected without causing the system to crash."""
+    result = login("", "")
+
+    assert result is False
+
+
