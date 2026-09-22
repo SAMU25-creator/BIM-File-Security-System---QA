@@ -32,3 +32,29 @@ contains injection-style content.
 The tests do not modify user accounts or project data. They only verify
 the result returned by the login() function.
 """
+import pytest
+
+from authentication import login
+
+
+# A registered user with the correct password must be authenticated.
+@pytest.mark.auth
+@pytest.mark.requirement("AUTH-001")
+def test_valid_user_correct_password():
+    """AUTH-001: A registered user providing the correct password must be authenticated successfully."""
+    result = login("valid_user", "correct_password")
+
+    assert result is True
+
+
+# An unregistered username must be rejected, even with a correct-looking password.
+@pytest.mark.auth
+@pytest.mark.negative
+@pytest.mark.requirement("AUTH-002")
+def test_invalid_username_rejected():
+    """AUTH-002: An unregistered username must be rejected."""
+    result = login("invalid_user", "correct_password")
+
+    assert result is False
+
+
