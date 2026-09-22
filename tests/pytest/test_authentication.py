@@ -80,3 +80,23 @@ def test_empty_credentials_rejected():
     assert result is False
 
 
+@pytest.mark.auth
+@pytest.mark.negative
+@pytest.mark.requirement("AUTH-004")
+def test_missing_username_rejected():
+    """AUTH-004: A missing (None) username must be rejected without causing the system to crash."""
+    result = login(None, "correct_password")
+
+    assert result is False
+
+
+@pytest.mark.auth
+@pytest.mark.negative
+@pytest.mark.requirement("AUTH-004")
+def test_missing_password_rejected():
+    """AUTH-004: A missing (None) password must be rejected without causing the system to crash."""
+    result = login("valid_user", None)
+
+    assert result is False
+
+
