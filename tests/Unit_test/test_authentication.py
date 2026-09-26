@@ -17,3 +17,15 @@ def test_invalid_username_rejected():
     result = login("invalid_user", "correct_password")
  
     assert result is False
+
+def test_wrong_password_rejected():
+    """Valid username but wrong password: login is denied."""
+    result = login("valid_user", "wrong_password")
+ 
+    assert result is False
+ 
+def test_empty_credentials_rejected():
+    """Empty username and password: login is denied, no crash."""
+    result = login("", "")
+ 
+    assert result is False
