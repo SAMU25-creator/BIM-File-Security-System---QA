@@ -41,3 +41,15 @@ def test_missing_password_rejected():
     result = login("valid_user", None)
  
     assert result is False
+
+def test_sql_injection_in_username_rejected():
+    """SQL injection string in username: login is denied."""
+    result = login("' OR '1'='1", "correct_password")
+ 
+    assert result is False
+
+def test_sql_injection_in_password_rejected():
+    """SQL injection string in password: login is denied."""
+    result = login("valid_user", "' OR '1'='1")
+ 
+    assert result is False
