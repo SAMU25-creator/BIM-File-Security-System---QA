@@ -29,3 +29,15 @@ def test_empty_credentials_rejected():
     result = login("", "")
  
     assert result is False
+
+def test_missing_username_rejected():
+    """Missing username (None): login is denied, no crash."""
+    result = login(None, "correct_password")
+ 
+    assert result is False
+ 
+def test_missing_password_rejected():
+    """Missing password (None): login is denied, no crash."""
+    result = login("valid_user", None)
+ 
+    assert result is False
