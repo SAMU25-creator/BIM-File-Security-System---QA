@@ -189,3 +189,16 @@ def test_file_access_entry_contains_who_action_file_and_time():
     assert entry[FIELD_TIME] not in (None, "")
 
 
+# LOG-003: The log entry must show who was acting, not just that something happened.
+@pytest.mark.logging
+@pytest.mark.requirement("LOG-003")
+def test_login_entry_contains_who_and_time():
+    """LOG-003: A login log entry contains the username and a timestamp."""
+    login("valid_user", "correct_password")
+
+    entry = get_log_entries()[0]
+
+    assert entry[FIELD_USER] == "valid_user"
+    assert entry[FIELD_TIME] not in (None, "")
+
+
