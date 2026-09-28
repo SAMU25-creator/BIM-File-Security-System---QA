@@ -90,3 +90,16 @@ def test_successful_login_is_logged():
     assert entries[0][FIELD_RESULT] == RESULT_SUCCESS
 
 
+# LOG-001: A failed login with the wrong password must still be logged.
+@pytest.mark.logging
+@pytest.mark.negative
+@pytest.mark.requirement("LOG-001")
+def test_failed_login_wrong_password_is_logged():
+    """LOG-001: A failed login (wrong password) creates a log entry marked as a failure."""
+    login("valid_user", "wrong_password")
+
+    entries = get_log_entries()
+
+    assert len(entries) == 1
+    assert entries[0][FIELD_USER] == "valid_user"
+    assert entries[0][FIELD_RESULT] == RESULT_FAILURE
