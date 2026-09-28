@@ -120,3 +120,15 @@ def test_failed_login_unknown_user_is_logged():
     assert entries[0][FIELD_RESULT] == RESULT_FAILURE
 
 
+# Each login attempt must add its own entry, so repeated attempts are all visible.
+@pytest.mark.logging
+@pytest.mark.requirement("LOG-001")
+def test_every_login_attempt_adds_one_entry():
+    """LOG-001: Three login attempts (one success, two failures) create three log entries."""
+    login("valid_user", "correct_password")
+    login("valid_user", "wrong_password")
+    login("invalid_user", "correct_password")
+
+    assert len(get_log_entries()) == 3
+
+
