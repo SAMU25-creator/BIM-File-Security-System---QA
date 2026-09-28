@@ -103,3 +103,20 @@ def test_failed_login_wrong_password_is_logged():
     assert len(entries) == 1
     assert entries[0][FIELD_USER] == "valid_user"
     assert entries[0][FIELD_RESULT] == RESULT_FAILURE
+
+
+# LOG-001: A failed login for an unknown username must still be logged.
+@pytest.mark.logging
+@pytest.mark.negative
+@pytest.mark.requirement("LOG-001")
+def test_failed_login_unknown_user_is_logged():
+    """LOG-001: A failed login (unregistered username) creates a log entry marked as a failure."""
+    login("invalid_user", "correct_password")
+
+    entries = get_log_entries()
+
+    assert len(entries) == 1
+    assert entries[0][FIELD_USER] == "invalid_user"
+    assert entries[0][FIELD_RESULT] == RESULT_FAILURE
+
+
