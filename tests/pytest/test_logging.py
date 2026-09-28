@@ -132,3 +132,16 @@ def test_every_login_attempt_adds_one_entry():
     assert len(get_log_entries()) == 3
 
 
+# LOG-002: An allowed file access must create a log entry.
+@pytest.mark.logging
+@pytest.mark.requirement("LOG-002")
+def test_allowed_file_access_is_logged():
+    """LOG-002: An allowed file access (architect views a file) creates a log entry."""
+    access_file("architect", "view", BIM_FILE)
+
+    entries = get_log_entries()
+
+    assert len(entries) == 1
+    assert entries[0][FIELD_USER] == "architect"
+    assert entries[0][FIELD_RESULT] == RESULT_ALLOWED
+
