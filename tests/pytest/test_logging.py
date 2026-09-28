@@ -248,3 +248,17 @@ def test_unrecognised_action_is_logged_as_denied():
     assert entry[FIELD_RESULT] == RESULT_DENIED
 
 
+# LOG-004: Allowed and denied attempts must be told apart in the log.
+@pytest.mark.logging
+@pytest.mark.requirement("LOG-004")
+def test_allowed_and_denied_entries_are_distinguishable():
+    """LOG-004: An allowed view and a denied edit by the same user have different results in the log."""
+    access_file("contractor", "view", BIM_FILE)
+    access_file("contractor", "edit", BIM_FILE)
+
+    allowed_entry, denied_entry = get_log_entries()
+
+    assert allowed_entry[FIELD_RESULT] == RESULT_ALLOWED
+    assert denied_entry[FIELD_RESULT] == RESULT_DENIED
+
+
