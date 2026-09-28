@@ -220,3 +220,18 @@ def test_log_timestamp_matches_time_of_attempt():
     assert before <= logged_time <= after
 
 
+# LOG-004: A denied edit must be recorded as denied, not as allowed or left out.
+@pytest.mark.logging
+@pytest.mark.negative
+@pytest.mark.requirement("LOG-004")
+def test_denied_edit_is_logged_as_denied():
+    """LOG-004: A client's denied edit is logged with the result 'denied'."""
+    access_file("client", "edit", BIM_FILE)
+
+    entry = get_log_entries()[0]
+
+    assert entry[FIELD_RESULT] == RESULT_DENIED
+    assert entry[FIELD_ACTION] == "edit"
+    assert entry[FIELD_FILE] == BIM_FILE
+
+
