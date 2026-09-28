@@ -235,3 +235,16 @@ def test_denied_edit_is_logged_as_denied():
     assert entry[FIELD_FILE] == BIM_FILE
 
 
+# LOG-004: An unrecognised action is denied, and that denial must be logged.
+@pytest.mark.logging
+@pytest.mark.negative
+@pytest.mark.requirement("LOG-004")
+def test_unrecognised_action_is_logged_as_denied():
+    """LOG-004: A denied unrecognised action (architect 'delete') is logged with the result 'denied'."""
+    access_file("architect", "delete", BIM_FILE)
+
+    entry = get_log_entries()[0]
+
+    assert entry[FIELD_RESULT] == RESULT_DENIED
+
+
