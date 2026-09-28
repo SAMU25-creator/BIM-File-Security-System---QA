@@ -160,3 +160,17 @@ def test_denied_file_access_is_logged():
     assert entries[0][FIELD_USER] == "contractor"
 
 
+# LOG-002: A denied access from an unregistered user must be logged too.
+@pytest.mark.logging
+@pytest.mark.negative
+@pytest.mark.requirement("LOG-002")
+def test_unregistered_user_access_attempt_is_logged():
+    """LOG-002: An access attempt by an unregistered user creates a log entry."""
+    access_file("unregistered_user", "view", BIM_FILE)
+
+    entries = get_log_entries()
+
+    assert len(entries) == 1
+    assert entries[0][FIELD_USER] == "unregistered_user"
+
+
