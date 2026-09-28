@@ -145,3 +145,18 @@ def test_allowed_file_access_is_logged():
     assert entries[0][FIELD_USER] == "architect"
     assert entries[0][FIELD_RESULT] == RESULT_ALLOWED
 
+
+# LOG-002: A denied file access must create a log entry as well.
+@pytest.mark.logging
+@pytest.mark.negative
+@pytest.mark.requirement("LOG-002")
+def test_denied_file_access_is_logged():
+    """LOG-002: A denied file access (contractor edits a file) creates a log entry."""
+    access_file("contractor", "edit", BIM_FILE)
+
+    entries = get_log_entries()
+
+    assert len(entries) == 1
+    assert entries[0][FIELD_USER] == "contractor"
+
+
