@@ -174,3 +174,18 @@ def test_unregistered_user_access_attempt_is_logged():
     assert entries[0][FIELD_USER] == "unregistered_user"
 
 
+# LOG-003: A file access entry must record who, what action, which file, and when.
+@pytest.mark.logging
+@pytest.mark.requirement("LOG-003")
+def test_file_access_entry_contains_who_action_file_and_time():
+    """LOG-003: A file access log entry contains the user, the action, the file, and a timestamp."""
+    access_file("engineer", "edit", BIM_FILE)
+
+    entry = get_log_entries()[0]
+
+    assert entry[FIELD_USER] == "engineer"
+    assert entry[FIELD_ACTION] == "edit"
+    assert entry[FIELD_FILE] == BIM_FILE
+    assert entry[FIELD_TIME] not in (None, "")
+
+
