@@ -76,3 +76,17 @@ def empty_log():
     clear_log()
 
 
+# LOG-001: A successful login must create exactly one log entry.
+@pytest.mark.logging
+@pytest.mark.requirement("LOG-001")
+def test_successful_login_is_logged():
+    """LOG-001: A successful login creates a log entry recording who logged in."""
+    login("valid_user", "correct_password")
+
+    entries = get_log_entries()
+
+    assert len(entries) == 1
+    assert entries[0][FIELD_USER] == "valid_user"
+    assert entries[0][FIELD_RESULT] == RESULT_SUCCESS
+
+
