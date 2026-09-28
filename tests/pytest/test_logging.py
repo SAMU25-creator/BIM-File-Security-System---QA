@@ -202,3 +202,21 @@ def test_login_entry_contains_who_and_time():
     assert entry[FIELD_TIME] not in (None, "")
 
 
+# LOG-003: The timestamp must reflect when the attempt actually happened.
+@pytest.mark.logging
+@pytest.mark.requirement("LOG-003")
+def test_log_timestamp_matches_time_of_attempt():
+    """LOG-003: The timestamp falls between just before and just after the attempt."""
+    before = time.time()
+    access_file("architect", "view", BIM_FILE)
+    after = time.time()
+
+    logged_time = get_log_entries()[0][FIELD_TIME]
+
+    # Accepts a numeric timestamp (seconds) or a datetime object.
+    if hasattr(logged_time, "timestamp"):
+        logged_time = logged_time.timestamp()
+
+    assert before <= logged_time <= after
+
+
