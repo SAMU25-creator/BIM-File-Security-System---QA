@@ -38,3 +38,41 @@ rather than disappearing from the log.
 The tests do not modify BIM files or user accounts. They only inspect the
 entries written to the log. The log is cleared before every test.
 """
+import time
+
+import pytest
+
+audit_log = pytest.importorskip(
+    "audit_log", reason="audit_log.py not yet implemented in the Development repo"
+)
+
+from authentication import login
+from access_control import access_file
+
+get_log_entries = audit_log.get_log_entries
+clear_log = audit_log.clear_log
+
+# Field names used inside a log entry 
+FIELD_USER = "username"
+FIELD_ACTION = "action"
+FIELD_FILE = "file"
+FIELD_TIME = "timestamp"
+FIELD_RESULT = "result"
+
+# Values used in the result field 
+RESULT_SUCCESS = "success"
+RESULT_FAILURE = "failure"
+RESULT_ALLOWED = "allowed"
+RESULT_DENIED = "denied"
+
+BIM_FILE = "building_model.ifc"
+
+
+# Start every test with an empty log so entries from other tests cannot interfere.
+@pytest.fixture(autouse=True)
+def empty_log():
+    clear_log()
+    yield
+    clear_log()
+
+
