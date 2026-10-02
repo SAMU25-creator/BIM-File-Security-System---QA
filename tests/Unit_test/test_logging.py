@@ -52,3 +52,19 @@ def test_clear_log_removes_entries():
     assert get_log_entries() == []
 
 
+# A successful login must add exactly one entry.
+def test_successful_login_adds_one_entry():
+    """Successful login: one log entry is added."""
+    login("valid_user", "correct_password")
+
+    assert len(get_log_entries()) == 1
+
+
+# A successful login must be recorded as a success.
+def test_successful_login_result_is_success():
+    """Successful login: the entry's result is 'success'."""
+    login("valid_user", "correct_password")
+
+    assert get_log_entries()[0][FIELD_RESULT] == RESULT_SUCCESS
+
+
