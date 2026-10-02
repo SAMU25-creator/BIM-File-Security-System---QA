@@ -68,3 +68,19 @@ def test_successful_login_result_is_success():
     assert get_log_entries()[0][FIELD_RESULT] == RESULT_SUCCESS
 
 
+# A login with the wrong password must still add an entry.
+def test_wrong_password_adds_one_entry():
+    """Wrong password: one log entry is added."""
+    login("valid_user", "wrong_password")
+
+    assert len(get_log_entries()) == 1
+
+
+# A login with the wrong password must be recorded as a failure.
+def test_wrong_password_result_is_failure():
+    """Wrong password: the entry's result is 'failure'."""
+    login("valid_user", "wrong_password")
+
+    assert get_log_entries()[0][FIELD_RESULT] == RESULT_FAILURE
+
+
