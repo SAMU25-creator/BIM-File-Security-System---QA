@@ -37,3 +37,18 @@ def empty_log():
     clear_log()
 
 
+# The log must be empty before anything happens.
+def test_log_starts_empty():
+    """Fresh log: no entries exist until an attempt is made."""
+    assert get_log_entries() == []
+
+
+# clear_log() must remove every entry that was written.
+def test_clear_log_removes_entries():
+    """After clear_log(): entries written earlier are gone."""
+    login("valid_user", "correct_password")
+    clear_log()
+
+    assert get_log_entries() == []
+
+
