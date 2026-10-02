@@ -262,3 +262,16 @@ def test_allowed_and_denied_entries_are_distinguishable():
     assert denied_entry[FIELD_RESULT] == RESULT_DENIED
 
 
+# Missing or malformed input must still be logged as denied, without crashing.
+@pytest.mark.logging
+@pytest.mark.negative
+@pytest.mark.requirement("LOG-004")
+def test_missing_username_is_logged_as_denied_without_crashing():
+    """LOG-004: A file access with a missing (None) username is denied, logged, and does not crash."""
+    result = access_file(None, "view", BIM_FILE)
+
+    entries = get_log_entries()
+
+    assert result is False
+    assert len(entries) == 1
+    assert entries[0][FIELD_RESULT] == RESULT_DENIED
