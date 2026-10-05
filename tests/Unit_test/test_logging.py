@@ -100,3 +100,33 @@ def test_login_entry_records_username():
     assert get_log_entries()[0][FIELD_USER] == "invalid_user"
 
 
+# Empty credentials must be logged without the system crashing.
+def test_empty_credentials_logged_without_crashing():
+    """Empty username and password: login is logged, no crash."""
+    login("", "")
+
+    assert len(get_log_entries()) == 1
+
+
+# Each login attempt must add its own entry.
+def test_each_login_attempt_adds_its_own_entry():
+    """Three login attempts: three log entries."""
+    login("valid_user", "correct_password")
+    login("valid_user", "wrong_password")
+    login("invalid_user", "correct_password")
+
+    assert len(get_log_entries()) == 3
+
+
+# Entries must be stored in the order the attempts happened.
+def test_entries_are_in_order_of_attempts():
+    """Two login attempts: the first attempt is the first entry."""
+    login("valid_user", "correct_password")
+    login("invalid_user", "correct_password")
+
+    entries = get_log_entries()
+
+    assert entries[0][FIELD_USER] == "valid_user"
+    assert entries[1][FIELD_USER] == "invalid_user"
+
+
