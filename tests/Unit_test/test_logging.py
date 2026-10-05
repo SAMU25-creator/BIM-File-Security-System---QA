@@ -154,3 +154,19 @@ def test_denied_access_adds_one_entry():
     assert len(get_log_entries()) == 1
 
 
+# A denied file access must be recorded as denied.
+def test_denied_access_result_is_denied():
+    """Denied file access: the entry's result is 'denied'."""
+    access_file("contractor", "edit", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_RESULT] == RESULT_DENIED
+
+
+# A denied edit by a client must be recorded as denied.
+def test_client_denied_edit_is_logged_as_denied():
+    """Client edit: logged as 'denied'."""
+    access_file("client", "edit", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_RESULT] == RESULT_DENIED
+
+
