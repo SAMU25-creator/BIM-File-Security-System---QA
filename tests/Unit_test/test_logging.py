@@ -239,3 +239,29 @@ def test_access_entry_records_timestamp():
     assert get_log_entries()[0][FIELD_TIME] not in (None, "")
 
 
+# The timestamp must fall inside the moment the attempt was made.
+def test_timestamp_matches_time_of_attempt():
+    """Timestamp: falls between just before and just after the attempt."""
+    before = time.time()
+    access_file("architect", "view", BIM_FILE)
+    after = time.time()
+
+    logged_time = get_log_entries()[0][FIELD_TIME]
+
+    # Accepts a numeric timestamp (seconds) or a datetime object.
+    if hasattr(logged_time, "timestamp"):
+        logged_time = logged_time.timestamp()
+
+    assert before <= logged_time <= after
+
+
+# Allowed and denied attempts by the same user must look different in the log.
+def test_allowed_and_denied_entries_are_distinguishable():
+    """Contractor view then edit: first entry 'allowed', second entry 'denied'."""
+    access_file("contractor", "view", BIM_FILE)
+    access_file("contractor", "edit", BIM_FILE)
+
+    allowed_entry, denied_entry = get_log_entries()
+
+    assert allowed_entry[FIELD_RESULT] == RESULT_ALLOWED
+    assert denied_entry[FIELD_RESULT] == RESULT_DENIED
