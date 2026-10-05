@@ -189,3 +189,21 @@ def test_unrecognised_action_is_logged_as_denied():
     assert get_log_entries()[0][FIELD_RESULT] == RESULT_DENIED
 
 
+# A missing username must be denied, logged, and not crash the system.
+def test_missing_username_logged_without_crashing():
+    """Missing username (None): access is denied and logged, no crash."""
+    result = access_file(None, "view", BIM_FILE)
+
+    assert result is False
+    assert len(get_log_entries()) == 1
+
+
+# A missing action must be denied, logged, and not crash the system.
+def test_missing_action_logged_without_crashing():
+    """Missing action (None): access is denied and logged, no crash."""
+    result = access_file("architect", None, BIM_FILE)
+
+    assert result is False
+    assert len(get_log_entries()) == 1
+
+
