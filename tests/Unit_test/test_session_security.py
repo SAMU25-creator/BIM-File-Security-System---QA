@@ -1,0 +1,161 @@
+"""
+Unit tests for session.py (session security).
+
+Assumed interface (same as tests/pytest/test_session_security.py):
+
+    create_session(username) -> token (non-empty str)
+    validate_session(token)  -> True if the session is active, else False
+    logout(token)            -> ends the session
+
+Inactivity expiry is tested by moving the clock forward, so session.py
+must read time via `time.time()` (i.e. `import time` in session.py).
+"""
+
+import time
+
+import pytest
+
+session = pytest.importorskip(
+    "session", reason="session.py not yet implemented in the Development repo"
+)
+
+create_session = session.create_session
+validate_session = session.validate_session
+logout = session.logout
+
+# Inactivity timeout (seconds). Uses Dev's constant if one exists.
+TIMEOUT = getattr(session, "SESSION_TIMEOUT", 30 * 60)
+
+
+@pytest.fixture
+def fake_clock(monkeypatch):
+    """Advance time without sleeping."""
+    real_time = time.time
+    offset = {"seconds": 0}
+    monkeypatch.setattr(time, "time", lambda: real_time() + offset["seconds"])
+
+    def advance(seconds):
+        offset["seconds"] += seconds
+
+    return advance
+
+
+# --- Creating sessions ---
+
+def test_create_session_returns_non_empty_string():
+    token = create_session("architect")
+
+    assert isinstance(token, str)
+    assert token != ""
+
+
+def test_new_session_is_valid():
+    token = create_session("architect")
+
+    assert validate_session(token) is True
+
+
+def test_two_sessions_get_different_tokens():
+    token_a = create_session("architect")
+    token_b = create_session("architect")
+
+    assert token_a != token_b
+
+
+def test_many_sessions_all_get_unique_tokens():
+    tokens = {create_session("engineer") for _ in range(50)}
+
+    assert len(tokens) == 50
+
+
+# --- Logout ---
+
+def test_logout_ends_session():
+    token = create_session("engineer")
+    logout(token)
+
+    assert validate_session(token) is False
+
+
+def test_logout_does_not_end_another_session():
+    token_a = create_session("architect")
+    token_b = create_session("client")
+    logout(token_a)
+
+    assert validate_session(token_a) is False
+    assert validate_session(token_b) is True
+
+
+def test_logged_out_token_stays_rejected():
+    token = create_session("architect")
+    logout(token)
+
+    assert validate_session(token) is False
+    assert validate_session(token) is False
+
+
+def test_logout_twice_does_not_crash():
+    token = create_session("architect")
+    logout(token)
+    logout(token)
+
+    assert validate_session(token) is False
+
+
+# --- Inactivity expiry ---
+
+def test_session_expires_after_timeout(fake_clock):
+    token = create_session("contractor")
+    fake_clock(TIMEOUT + 1)
+
+    assert validate_session(token) is False
+
+
+def test_session_valid_just_before_timeout(fake_clock):
+    token = create_session("contractor")
+    fake_clock(TIMEOUT - 5)
+
+    assert validate_session(token) is True
+
+
+def test_expired_token_stays_rejected(fake_clock):
+    token = create_session("client")
+    fake_clock(TIMEOUT + 1)
+
+    assert validate_session(token) is False
+    assert validate_session(token) is False
+
+
+def test_new_session_after_expiry_is_valid(fake_clock):
+    old_token = create_session("client")
+    fake_clock(TIMEOUT + 1)
+    new_token = create_session("client")
+
+    assert validate_session(old_token) is False
+    assert validate_session(new_token) is True
+
+
+# --- Invalid / malformed tokens ---
+
+@pytest.mark.parametrize(
+    "bad_token",
+    [
+        None,
+        "",
+        "   ",
+        "not-a-real-token",
+        "' OR '1'='1",
+        12345,
+        [],
+        {},
+    ],
+)
+def test_invalid_token_rejected_without_crash(bad_token):
+    result = validate_session(bad_token)
+
+    assert result is False
+
+
+@pytest.mark.parametrize("bad_token", [None, "", "not-a-real-token"])
+def test_logout_with_invalid_token_does_not_crash(bad_token):
+    logout(bad_token)  # must not raise
