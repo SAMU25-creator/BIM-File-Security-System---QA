@@ -84,3 +84,19 @@ def test_wrong_password_result_is_failure():
     assert get_log_entries()[0][FIELD_RESULT] == RESULT_FAILURE
 
 
+# A login with an unknown username must still add an entry.
+def test_unknown_username_adds_one_entry():
+    """Unregistered username: one log entry is added."""
+    login("invalid_user", "correct_password")
+
+    assert len(get_log_entries()) == 1
+
+
+# The login entry must record which username was used.
+def test_login_entry_records_username():
+    """Login entry: the username used is recorded."""
+    login("invalid_user", "correct_password")
+
+    assert get_log_entries()[0][FIELD_USER] == "invalid_user"
+
+
