@@ -222,3 +222,20 @@ def test_access_entry_records_action():
 
     assert get_log_entries()[0][FIELD_ACTION] == "edit"
 
+
+# The entry must record which file was accessed.
+def test_access_entry_records_file():
+    """File access entry: the file name is recorded."""
+    access_file("engineer", "edit", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_FILE] == BIM_FILE
+
+
+# The entry must record when the attempt happened.
+def test_access_entry_records_timestamp():
+    """File access entry: a timestamp is recorded."""
+    access_file("engineer", "edit", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_TIME] not in (None, "")
+
+
