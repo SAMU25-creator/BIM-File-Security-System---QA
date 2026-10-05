@@ -207,3 +207,18 @@ def test_missing_action_logged_without_crashing():
     assert len(get_log_entries()) == 1
 
 
+# The entry must record who made the file access attempt.
+def test_access_entry_records_who():
+    """File access entry: the username is recorded."""
+    access_file("engineer", "edit", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_USER] == "engineer"
+
+
+# The entry must record what action was attempted.
+def test_access_entry_records_action():
+    """File access entry: the action is recorded."""
+    access_file("engineer", "edit", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_ACTION] == "edit"
+
