@@ -130,3 +130,27 @@ def test_entries_are_in_order_of_attempts():
     assert entries[1][FIELD_USER] == "invalid_user"
 
 
+# An allowed file access must add one entry.
+def test_allowed_access_adds_one_entry():
+    """Allowed file access: one log entry is added."""
+    access_file("architect", "view", BIM_FILE)
+
+    assert len(get_log_entries()) == 1
+
+
+# An allowed file access must be recorded as allowed.
+def test_allowed_access_result_is_allowed():
+    """Allowed file access: the entry's result is 'allowed'."""
+    access_file("architect", "view", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_RESULT] == RESULT_ALLOWED
+
+
+# A denied file access must add one entry, not be silently dropped.
+def test_denied_access_adds_one_entry():
+    """Denied file access: one log entry is added."""
+    access_file("contractor", "edit", BIM_FILE)
+
+    assert len(get_log_entries()) == 1
+
+
