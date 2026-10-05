@@ -147,3 +147,10 @@ def test_invalid_token_rejected_without_crash(bad_token):
     assert validate_session(bad_token) is False
 
 
+@pytest.mark.session
+@pytest.mark.negative
+@pytest.mark.requirement("SESS-005")
+def test_logout_with_invalid_token_does_not_crash():
+    """SESS-005: Logging out with a bad token must fail safely."""
+    for bad_token in (None, "", "not-a-real-token"):
+        logout(bad_token)  # must not raise
