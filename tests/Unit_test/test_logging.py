@@ -170,3 +170,22 @@ def test_client_denied_edit_is_logged_as_denied():
     assert get_log_entries()[0][FIELD_RESULT] == RESULT_DENIED
 
 
+# An unregistered user's access attempt must be logged as denied.
+def test_unregistered_user_is_logged_as_denied():
+    """Unregistered user: access attempt is logged as 'denied'."""
+    access_file("unregistered_user", "view", BIM_FILE)
+
+    entry = get_log_entries()[0]
+
+    assert entry[FIELD_USER] == "unregistered_user"
+    assert entry[FIELD_RESULT] == RESULT_DENIED
+
+
+# An unrecognised action must be denied and the denial logged.
+def test_unrecognised_action_is_logged_as_denied():
+    """Unrecognised action ('delete'): logged as 'denied'."""
+    access_file("architect", "delete", BIM_FILE)
+
+    assert get_log_entries()[0][FIELD_RESULT] == RESULT_DENIED
+
+
