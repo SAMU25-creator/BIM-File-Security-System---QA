@@ -54,3 +54,24 @@ def test_stored_file_is_not_plaintext():
     assert b"CONFIDENTIAL" not in Path(path).read_bytes()
 
 
+# The same data must not produce the same ciphertext twice.
+@pytest.mark.encryption
+@pytest.mark.requirement("ENC-001")
+def test_same_data_encrypts_differently_each_time():
+    """ENC-001: Encrypting the same data twice gives different ciphertext."""
+    assert encrypt_data(SECRET) != encrypt_data(SECRET)
+
+
+# --- ENC-002: stored files decrypt back to the original ---
+
+# A stored file must read back as exactly the original bytes.
+@pytest.mark.encryption
+@pytest.mark.requirement("ENC-002")
+@pytest.mark.parametrize("data", [SECRET, b"", bytes(range(256))], ids=["text", "empty", "binary"])
+def test_stored_file_round_trips(data):
+    """ENC-002: A stored file reads back as exactly the original bytes."""
+    store_file("plan.bim", data)
+
+    assert read_file("plan.bim") == data
+
+
