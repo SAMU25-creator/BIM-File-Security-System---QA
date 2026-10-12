@@ -229,3 +229,29 @@ def test_reading_missing_file_rejected():
         read_file("never-stored.bim")
 
 
+# With no key set, nothing can be encrypted or stored.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-004")
+def test_missing_key_rejected(monkeypatch):
+    """ENC-004: With no key configured, nothing is encrypted or stored."""
+    monkeypatch.delenv("BIM_ENCRYPTION_KEY")
+
+    with pytest.raises(EncryptionError):
+        encrypt_data(SECRET)
+    with pytest.raises(EncryptionError):
+        store_file("plan.bim", SECRET)
+
+
+# A malformed key must be rejected and never shown in the error.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-004")
+def test_invalid_key_rejected_without_leaking_it(monkeypatch):
+    """ENC-004: A malformed key is rejected and not shown in the error."""
+    monkeypatch.setenv("BIM_ENCRYPTION_KEY", "not-a-valid-key")
+
+    with pytest.raises(EncryptionError) as error:
+        encrypt_data(SECRET)
+
+    assert "not-a-valid-key" not in str(error.value)
