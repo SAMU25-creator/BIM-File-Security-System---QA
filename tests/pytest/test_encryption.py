@@ -182,3 +182,28 @@ def test_store_rejects_unsafe_filename(bad_name):
         store_file(bad_name, SECRET)
 
 
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-004")
+@pytest.mark.parametrize("bad_name", BAD_FILENAMES)
+def test_read_rejects_unsafe_filename(bad_name):
+    """ENC-004: read_file rejects empty, non-text, and path-escaping file names."""
+    with pytest.raises(EncryptionError):
+        read_file(bad_name)
+
+
+# Only bytes can be encrypted, decrypted, or stored.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-004")
+@pytest.mark.parametrize("bad_data", [None, "text, not bytes", 123])
+def test_non_bytes_data_rejected(bad_data):
+    """ENC-004: encrypt_data, decrypt_data, and store_file only accept bytes."""
+    with pytest.raises(EncryptionError):
+        encrypt_data(bad_data)
+    with pytest.raises(EncryptionError):
+        decrypt_data(bad_data)
+    with pytest.raises(EncryptionError):
+        store_file("plan.bim", bad_data)
+
+
