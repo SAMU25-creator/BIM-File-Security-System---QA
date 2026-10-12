@@ -149,3 +149,36 @@ def test_garbage_data_rejected(garbage):
         decrypt_data(garbage)
 
 
+# The error message must not show the key or the file content.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-003")
+def test_failed_decrypt_does_not_leak_secrets(monkeypatch):
+    """ENC-003: The error for a failed decrypt shows neither the key nor the content."""
+    store_file("plan.bim", SECRET)
+    wrong_key = generate_key()
+    monkeypatch.setenv("BIM_ENCRYPTION_KEY", wrong_key)
+
+    with pytest.raises(EncryptionError) as error:
+        read_file("plan.bim")
+
+    assert wrong_key not in str(error.value)
+    assert SECRET.decode() not in str(error.value)
+
+
+# --- ENC-004: bad input is rejected safely ---
+
+# File names that are empty, not text, or point outside the storage folder must be rejected.
+BAD_FILENAMES = [None, "", "../escape.bim", "sub/plan.bim", ".."]
+
+
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-004")
+@pytest.mark.parametrize("bad_name", BAD_FILENAMES)
+def test_store_rejects_unsafe_filename(bad_name):
+    """ENC-004: store_file rejects empty, non-text, and path-escaping file names."""
+    with pytest.raises(EncryptionError):
+        store_file(bad_name, SECRET)
+
+
