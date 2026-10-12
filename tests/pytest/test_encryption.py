@@ -124,3 +124,28 @@ def test_changed_file_rejected():
         read_file("plan.bim")
 
 
+# A stored file that is cut short must be rejected.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-003")
+def test_cut_off_file_rejected():
+    """ENC-003: A stored file that is cut short is rejected."""
+    path = Path(store_file("plan.bim", SECRET))
+    data = path.read_bytes()
+    path.write_bytes(data[: len(data) // 2])
+
+    with pytest.raises(EncryptionError):
+        read_file("plan.bim")
+
+
+# Data that was never encrypted by the system must be rejected.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-003")
+@pytest.mark.parametrize("garbage", [b"", b"garbage"], ids=["empty", "text"])
+def test_garbage_data_rejected(garbage):
+    """ENC-003: Data that was never encrypted is rejected."""
+    with pytest.raises(EncryptionError):
+        decrypt_data(garbage)
+
+
