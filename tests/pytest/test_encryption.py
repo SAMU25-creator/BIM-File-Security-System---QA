@@ -94,3 +94,33 @@ def test_overwriting_a_file_returns_latest_version():
     assert read_file("plan.bim") == b"version 2"
 
 
+# --- ENC-003: wrong key or changed data is rejected ---
+
+# A file encrypted with one key must not be readable with another key.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-003")
+def test_wrong_key_cannot_read_file(monkeypatch):
+    """ENC-003: A file encrypted with one key cannot be read with another."""
+    store_file("plan.bim", SECRET)
+    monkeypatch.setenv("BIM_ENCRYPTION_KEY", generate_key())
+
+    with pytest.raises(EncryptionError):
+        read_file("plan.bim")
+
+
+# Changing one byte of the stored file must be detected.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-003")
+def test_changed_file_rejected():
+    """ENC-003: Changing a single byte of the stored file is detected."""
+    path = Path(store_file("plan.bim", SECRET))
+    data = bytearray(path.read_bytes())
+    data[len(data) // 2] ^= 1
+    path.write_bytes(bytes(data))
+
+    with pytest.raises(EncryptionError):
+        read_file("plan.bim")
+
+
