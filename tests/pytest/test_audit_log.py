@@ -1,7 +1,7 @@
 """
-test_logging.py
+test_audit_log.py
 
-Acceptance tests for Logging (LOG-001 to LOG-004).
+Acceptance tests for Audit Logging (LOG-001 to LOG-004).
 
 ASSUMED INTERFACE for the Development repo's audit_log.py
 (adjust the names and field constants below if Dev uses different ones;
