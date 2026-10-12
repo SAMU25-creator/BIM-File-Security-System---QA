@@ -75,3 +75,22 @@ def test_stored_file_round_trips(data):
     assert read_file("plan.bim") == data
 
 
+# decrypt_data must reverse encrypt_data.
+@pytest.mark.encryption
+@pytest.mark.requirement("ENC-002")
+def test_encrypt_then_decrypt_round_trips():
+    """ENC-002: decrypt_data reverses encrypt_data."""
+    assert decrypt_data(encrypt_data(SECRET)) == SECRET
+
+
+# Storing under an existing name must replace the old content.
+@pytest.mark.encryption
+@pytest.mark.requirement("ENC-002")
+def test_overwriting_a_file_returns_latest_version():
+    """ENC-002: Storing under an existing name replaces the old content."""
+    store_file("plan.bim", b"version 1")
+    store_file("plan.bim", b"version 2")
+
+    assert read_file("plan.bim") == b"version 2"
+
+
