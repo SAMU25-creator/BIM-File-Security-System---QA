@@ -33,3 +33,24 @@ from encryption import (
 SECRET = b"Level 2 floor plan - CONFIDENTIAL"
 
 
+# Give every test a fresh key and a fresh storage folder.
+@pytest.fixture(autouse=True)
+def encryption_env(monkeypatch, tmp_path):
+    storage = tmp_path / "storage"
+    monkeypatch.setenv("BIM_ENCRYPTION_KEY", generate_key())
+    monkeypatch.setenv("BIM_STORAGE_DIR", str(storage))
+    return storage
+
+
+# --- ENC-001: files are stored encrypted ---
+
+# The file on disk must not contain the original content.
+@pytest.mark.encryption
+@pytest.mark.requirement("ENC-001")
+def test_stored_file_is_not_plaintext():
+    """ENC-001: The file on disk does not contain the original content."""
+    path = store_file("plan.bim", SECRET)
+
+    assert b"CONFIDENTIAL" not in Path(path).read_bytes()
+
+
