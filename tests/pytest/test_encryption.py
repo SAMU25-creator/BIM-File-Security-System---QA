@@ -207,3 +207,25 @@ def test_non_bytes_data_rejected(bad_data):
         store_file("plan.bim", bad_data)
 
 
+# A rejected store must not leave a file behind.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-004")
+def test_failed_store_writes_nothing(encryption_env):
+    """ENC-004: A rejected store leaves no file in storage."""
+    with pytest.raises(EncryptionError):
+        store_file("plan.bim", None)
+
+    assert list(encryption_env.glob("*")) == []
+
+
+# Reading a file that was never stored must fail safely.
+@pytest.mark.encryption
+@pytest.mark.negative
+@pytest.mark.requirement("ENC-004")
+def test_reading_missing_file_rejected():
+    """ENC-004: Reading a file that was never stored is rejected."""
+    with pytest.raises(EncryptionError):
+        read_file("never-stored.bim")
+
+
