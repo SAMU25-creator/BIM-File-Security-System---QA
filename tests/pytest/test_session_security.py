@@ -3,7 +3,7 @@ test_session_security.py
 
 Acceptance tests for Session Security (SESS-001 to SESS-005).
 
-ASSUMED INTERFACE for the Development repo's session.py
+ASSUMED INTERFACE for the Development repo's session_security.py
 (adjust the three names below if Dev uses different ones):
 
     create_session(username) -> token (non-empty str)
@@ -20,7 +20,8 @@ import time
 import pytest
 
 session = pytest.importorskip(
-    "session", reason="session.py not yet implemented in the Development repo"
+    "session_security",
+    reason="session_security.py not found in the Development repo"
 )
 
 create_session = session.create_session

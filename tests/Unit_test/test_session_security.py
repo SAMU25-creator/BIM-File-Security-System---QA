@@ -16,8 +16,8 @@ import time
 import pytest
 
 session = pytest.importorskip(
-    "session", 
-    reason="session.py not yet implemented in the Development repo"
+    "session_security",
+    reason="session_security.py not found in the Development repo"
 )
 
 create_session = session.create_session
